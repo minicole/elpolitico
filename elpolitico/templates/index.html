@@ -2,23 +2,33 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>El Politico - Test</title>
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'content/css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'content/css/estilopolitico.css' %}">
+
+
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
     <script src="{% static 'scripts/bootjs/bootstrap.js' %}"></script>
 
-{#    <style>#}
-{#      #map {#}
-{#        width: inherit;#}
-{#        height: 600px;#}
-{#      }#}
-{#    </style>#}
 <script type="text/javascript"
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBo1twK-Cb-Mb1q7YCK1HaLFBCLb6BWwrc&libraries=visualization&sensor=true_or_false">
 </script>
 
 <script>
+    function highlight(element){
+        if($(element).hasClass("active")){
+            $(element).removeClass("active");
+        }
+        else{
+            $(element).addClass("active");
+        }
+    }
+
+    //Put the AJAX function in here!
+    //TODO: Need to update every single second
+
     function initialize() {
 
         //TODO: Actually make this thing load data from our server!
@@ -42,7 +52,7 @@
         //Coordinates to center the map correctly
         var worldCenter = new google.maps.LatLng(21.809308, 16.437686);
 
-        //Setup the map (llok at API for constructor)
+        //Setup the map (look at API for constructor)
         var map = new google.maps.Map(document.getElementById('map'), {
             center: worldCenter,
             zoom: 2,
@@ -86,30 +96,117 @@
 </head>
 <body>
 
-<nav class="navbar navbar-fixed-top" role="navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
 
+
+<!--This is the Navbar-->
+<nav class="navbar navbar-fixed-top navbar-inverse container" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="container-fluid">
-        <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#sectionA" title="Manage your schedule and registration">
-                Schedule Management</a></li>
-            <li><a data-toggle="tab" href="#sectionB" title="View your student record and online profile">
-                My Profile</a></li>
-            <li><a data-toggle="tab" href="#sectionC" title="Helpful links to other sites">
-                Tools</a></li>
-            <li><a href="/work_in_progress/" title="Site help section">Help</a></li>
-            <li><a href="/logout" title="Last Section">Logout</a></li>
-        </ul>
+        <div class="navbar-inner">
+            <ul class="nav nav-pills">
+                <li><a>El Político</a></li> <!-- INSERT COOL LOGO HERE! -->
+                 <li class="divider-vertical"></li>
+
+                <li><a>Map Influence Sources:</a></li>
+                <li class="btn-small active" onclick="highlight(this)">
+                    <a data-toggle="buttons" title="Show/Hide well-renowned news media outlets">
+                    News Media
+                    </a>
+                </li>
+                <li class="btn-small active" onclick="highlight(this)">
+                    <a title="Show/Hide Twitter Feed">
+                    Twitter User Feed
+                    </a>
+                </li>
+                <li class="btn-small">
+                    <a title="To Be Implemented">
+                    Instagram Posts
+                    </a>
+                </li>
+
+                <li class="divider-vertical"></li>
+                <li><a href="/">About</a></li> <!-- TODO: link to new template-->
+
+            </ul>
+        </div>
+
     </div>
 
-</nav><!-- /.navbar -->
+</nav>
+<!-- /.navbar -->
 
+
+<!-- Start of actual body content-->
 <div class="container-fluid body-content">
 
+    <!-- Only element should be the map in here...-->
     <div class="row">
-        <div id="map" class="col-md-12" style="margin-top: 42px;  position: absolute; width: 100%; height: 100%;"></div>
+        <div id="map" class="" style="margin-top: 0px;  position: absolute; width: 100%; height: 100%;"></div>
     </div>
+
+    <div class="navbar navbar-fixed-bottom navbar-inverse">
+        <div class="navbar-inner" style="margin: 0 auto; display: table; table-layout: fixed; float:none;">
+            <div style="background: #cccccc"><span><br></span></div>
+            <ul class="nav nav-pills">
+
+                <li class="info pull-right">
+                    <p>Statistics Recorded</p>
+                    <ul class="pull-right unstyled">
+                        <li>Percentage Total</li>
+                        <li>Avg. Certainty</li>
+                        <li>Positivity</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <p class="btn-small active ecogreen">Green Party</p>
+                    <ul class="text-center unstyled">
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <p class="btn-small active liberal">Liberal Party</p>
+                    <ul class="text-center unstyled">
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <p class="btn-small active conservador">Conservativism</p>
+                    <ul class="text-center unstyled">
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <p class="btn-small derecha">Libertarianism</p>
+                    <ul class="text-center unstyled">
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                        <li><a>[NaN]</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <p></p>
+        </div>
+    </div>
+
+
 </div>
+
+
+
+
+{##}
+{#<footer class="footer navbar-fixed-bottom">#}
+{#    <div class="col-md-3">A</div>#}
+{#    <div class="col-md-3">A</div>#}
+{##}
+{#</footer><!-- /.navbar -->#}
 
 </body>
 </html>
