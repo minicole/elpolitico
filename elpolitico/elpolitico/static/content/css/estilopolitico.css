@@ -1,0 +1,45 @@
+.elpolitico_partido{
+    min-width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.info{
+    color: #c4e3f3;
+    min-width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.ecogreen{
+    /*color: #000000;*/
+    min-width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background: green;
+}
+
+.liberal{
+    color: #000000;
+    min-width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background: darkred;
+}
+
+.conservador{
+    color: #000000;
+    min-width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background: dodgerblue;
+}
+
+.derecha{
+    color: #000000;
+    min-width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background: goldenrod;
+}
+
