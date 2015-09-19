@@ -7,8 +7,109 @@
     <link rel="stylesheet" type="text/css" href="{% static 'content/css/bootstrap.min.css' %}"/>
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
     <script src="{% static 'scripts/bootjs/bootstrap.js' %}"></script>
+
+{#    <style>#}
+{#      #map {#}
+{#        width: inherit;#}
+{#        height: 600px;#}
+{#      }#}
+{#    </style>#}
+<script type="text/javascript"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBo1twK-Cb-Mb1q7YCK1HaLFBCLb6BWwrc&libraries=visualization&sensor=true_or_false">
+</script>
+
+<script>
+    function initialize() {
+
+        //TODO: Actually make this thing load data from our server!
+        var heatmapData = [
+          new google.maps.LatLng(37.782, -122.447),
+          new google.maps.LatLng(37.782, -122.445),
+          new google.maps.LatLng(37.782, -122.443),
+          new google.maps.LatLng(37.782, -122.441),
+          new google.maps.LatLng(37.782, -122.439),
+          new google.maps.LatLng(37.782, -122.437),
+          new google.maps.LatLng(37.782, -122.435),
+          new google.maps.LatLng(37.785, -122.447),
+          new google.maps.LatLng(37.785, -122.445),
+          new google.maps.LatLng(37.785, -122.443),
+          new google.maps.LatLng(37.785, -122.441),
+          new google.maps.LatLng(37.785, -122.439),
+          new google.maps.LatLng(37.785, -122.437),
+          new google.maps.LatLng(37.785, -122.435)
+        ];
+
+        //Coordinates to center the map correctly
+        var worldCenter = new google.maps.LatLng(21.809308, 16.437686);
+
+        //Setup the map (llok at API for constructor)
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: worldCenter,
+            zoom: 2,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        //Make a new Heatmap Layer
+        var heatmap = new google.maps.visualization.HeatmapLayer({
+            data: heatmapData
+        });
+
+        var waterlooHeat = [
+                new google.maps.LatLng(43.461549, -80.472324),
+                new google.maps.LatLng(43.461549, -80.472326),
+                new google.maps.LatLng(43.461549, -80.472328),
+                new google.maps.LatLng(43.461547, -80.472324),
+                new google.maps.LatLng(43.461545, -80.472324),
+                new google.maps.LatLng(43.461543, -80.472324),
+                new google.maps.LatLng(43.461549, -80.472324),
+                new google.maps.LatLng(43.461549, -80.472326),
+                new google.maps.LatLng(43.461549, -80.472328),
+                new google.maps.LatLng(43.461547, -80.472324),
+                new google.maps.LatLng(43.461545, -80.472324),
+                new google.maps.LatLng(43.461543, -80.472324)
+        ];
+
+        var heatmapCan = new google.maps.visualization.HeatmapLayer({
+            data: waterlooHeat
+        });
+
+        heatmapCan.setMap(map);
+        heatmap.setMap(map);
+    }
+
+    //Initialize the map
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+
+</script>
+
 </head>
 <body>
-    <p>IT WORKS!</p>
+
+<nav class="navbar navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+
+    <div class="container-fluid">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#sectionA" title="Manage your schedule and registration">
+                Schedule Management</a></li>
+            <li><a data-toggle="tab" href="#sectionB" title="View your student record and online profile">
+                My Profile</a></li>
+            <li><a data-toggle="tab" href="#sectionC" title="Helpful links to other sites">
+                Tools</a></li>
+            <li><a href="/work_in_progress/" title="Site help section">Help</a></li>
+            <li><a href="/logout" title="Last Section">Logout</a></li>
+        </ul>
+    </div>
+
+</nav><!-- /.navbar -->
+
+<div class="container-fluid body-content">
+
+    <div class="row">
+        <div id="map" class="col-md-12" style="margin-top: 42px;  position: absolute; width: 100%; height: 100%;"></div>
+    </div>
+</div>
+
 </body>
 </html>
