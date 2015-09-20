@@ -23,7 +23,7 @@ class MyStates:
         for point in self.newPoints:
             self.existingPoints.append(point)
             # serialize points:
-            pointsToPass.append(json.dumps(point))
+            pointsToPass.append(json.dumps(point.newPoint.exportToFrontEnd()))
         # empty the old new points:
         self.newPoints = list()
         return {'newPoints': pointsToPass}
@@ -67,3 +67,6 @@ class NewPoint:
         self.lat = 0
         self.long = 0
         self.party = None
+
+    def exportToFrontEnd(self):
+        return {"lat": self.lat, "long": self.long, "tendency": self.tendency, "party": self.party}

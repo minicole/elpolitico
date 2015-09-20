@@ -17,9 +17,11 @@ KeywordThread = None
 
 Testy = "A"
 
-
-
-
+def getMyStates():
+    global myStates
+    if myStates is None:
+        myStates = MyStates()
+    return myStates
 
 def init_workers():
     global KeywordThread
