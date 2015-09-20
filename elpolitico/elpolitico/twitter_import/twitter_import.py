@@ -19,7 +19,11 @@ googleAPIKey = 'AIzaSyBo1twK-Cb-Mb1q7YCK1HaLFBCLb6BWwrc'
 
 points = list()
 
-#override tweepy.StreamListener to add logic to on_status
+
+
+
+
+# Override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
     counter = 0
 
