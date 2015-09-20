@@ -27,7 +27,7 @@ def init_workers():
     global KeywordThread
     global TwitterThread
 
-    time.sleep(60)
+    # time.sleep(60)
 
     if KeywordThread is None or not KeywordThread.isAlive():
         KeywordThread = threading.Thread(target=KeywordUpdateThread)
