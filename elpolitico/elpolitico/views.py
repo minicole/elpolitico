@@ -5,9 +5,37 @@ from elpolitico.settings import STATICFILES_DIRS
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from MyState import *
 import MyState
+import threading
+from observer import *
 import json
 
 myStates = None
+
+TwitterThread = None
+
+KeywordThread = None
+
+Testy = "A"
+
+
+
+
+
+def init_workers():
+    global KeywordThread
+    global TwitterThread
+
+    time.sleep(60)
+
+    if KeywordThread is None or not KeywordThread.isAlive():
+        KeywordThread = threading.Thread(target=KeywordUpdateThread)
+        KeywordThread.start()
+
+    if TwitterThread is None or not TwitterThread.isAlive():
+        TwitterThread = threading.Thread(target=TwitterUpdateThread())
+        TwitterThread.start()
+# end init_workers
+
 
 def home(request):
     print(STATICFILES_DIRS)
@@ -24,8 +52,8 @@ def party_check(request, party=None):
         if mystate.party == party:
             data = mystate.exportToFrontEnd()
             data = json.dumps(data)
-            print(data)
             return HttpResponse(data)
+    return HttpResponseRedirect('/')
 
 def new_points_check(request):
     global myStates
