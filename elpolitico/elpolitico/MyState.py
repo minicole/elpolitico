@@ -2,6 +2,7 @@ __author__ = 'Nicole'
 
 import json
 import random
+import time
 
 GREEN = 'green'
 CONSERVATIVE = 'conservative'
@@ -27,7 +28,7 @@ class MyStates:
             pointsToPass.append(json.dumps(point.newPoint.exportToFrontEnd()))
         # empty the old new points:
         self.newPoints = list()
-        return {'newPoints': pointsToPass}
+        return {'newPoints': pointsToPass, 'timestamp': time.time()}
 
     def addNewPoint(self, point):
         self.newPoints.append(point)

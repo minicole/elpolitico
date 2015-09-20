@@ -27,7 +27,7 @@ def init_workers():
     global KeywordThread
     global TwitterThread
 
-    # time.sleep(60)
+    time.sleep(60)
 
     if KeywordThread is None or not KeywordThread.isAlive():
         KeywordThread = threading.Thread(target=KeywordUpdateThread)
@@ -42,7 +42,7 @@ def init_workers():
 def home(request):
 
     spawn_off = threading.Thread(target=init_workers)
-    # spawn_off.start()
+    spawn_off.start()
 
     print(STATICFILES_DIRS)
 

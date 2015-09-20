@@ -130,47 +130,49 @@ class MyStreamListener(tweepy.StreamListener):
         # if isNotEnglish(message):
         #     message = translateFromUnknownLanguageToEnglish(message)
         politicalTag = indicoPolitics(message)
-        print(politicalTag)
-        if data['user']['geo_enabled'] == True:
-            mostAccurateLocation = data['coordinates']['coordinates']
-            coordinates = mostAccurateLocation
-        else:
-            location = data['user']['location']
-            if location is not None:
-                decoded_str = location.decode("windows-1252")
-                encoded_str = decoded_str.encode("utf8")
-                if(encoded_str is None):
-                    print(location + " was passed as NoneType")
-                if ',' in encoded_str:
-                    mostAccurateLocation = encoded_str
-                    try:
-                        url = "https://maps.googleapis.com/maps/api/geocode/json?address="+mostAccurateLocation+"&key="+googleAPIKey
-                        print(url)
-                        result = urllib2.urlopen(url)
-                    except Exception, e:
-                        print(e)
-                    coordinates = result
-                else:
-                    mostAccurateLocation = None
-                    coordinates = None
+        # if data['user']['geo_enabled'] == True:
+        #     mostAccurateLocation = data['coordinates']['coordinates']
+        #     coordinates = mostAccurateLocation
+        # else:
+        #     location = data['user']['location']
+        #     if location is not None:
+        #         decoded_str = location.decode("windows-1252")
+        #         encoded_str = decoded_str.encode("utf8")
+        #         if encoded_str is None:
+        #             print(location + " was passed as NoneType")
+        #         if ',' in encoded_str:
+        #             mostAccurateLocation = encoded_str
+        #             try:
+        #                 url = "https://maps.googleapis.com/maps/api/geocode/json?address="+mostAccurateLocation+"&key="+googleAPIKey
+        #                 print(url)
+        #                 result = urllib2.urlopen(url)
+        #             except Exception, e:
+        #                 print(e)
+        #             coordinates = result
+        #         else:
+        #             mostAccurateLocation = None
+        #             coordinates = None
+        # coordinates=None
+        # poliNumber = indicoPoliticsNumber(message)
+        # print(poliNumber + "!!!")
+        # positivity = indicoPositivity(message)
+        # print(positivity + "!!!")
+        #
+        # myStateOfPoint = StateOfPoint()
+        # myStateOfPoint.newPoint.party = politicalTag
+        # myStateOfPoint.newPoint.tendency = poliNumber
+        # myStateOfPoint.positivity = positivity
+        # if coordinates is not None:
+        #     print(coordinates)
+        #     coordinates = mostAccurateLocation.split(', ')
+        #     myStateOfPoint.newPoint.lat = coordinates[0]
+        #     myStateOfPoint.newPoint.long = coordinates[1]
+        #
+        # PointsCaptured.append(myStateOfPoint)
+        # if len(PointsCaptured) is MAX_CACHE_NUMBER:
+        #     PointsCaptured.remove(0)  # Remove the first element!
+        # print(myStateOfPoint)
 
-        PointsCaptured.append([politicalTag, indicoPoliticsNumber(message), indicoPositivity(message), mostAccurateLocation])
-        if len(PointsCaptured) is MAX_CACHE_NUMBER:
-            PointsCaptured.remove(0)  # Remove the first element!
-
-        print(PointsCaptured)
-
-        myStateOfPoint = StateOfPoint()
-        myStateOfPoint.newPoint.party = politicalTag
-        myStateOfPoint.newPoint.tendency = indicoPoliticsNumber(message)
-        myStateOfPoint.positivity = indicoPositivity(message)
-        if coordinates is not None:
-            coordinates = mostAccurateLocation.split(', ')
-            myStateOfPoint.newPoint.lat = coordinates[0]
-            myStateOfPoint.newPoint.long = coordinates[1]
-
-        print(myStateOfPoint)
-        P
 
 # end Class MyStreamListener
 
@@ -181,10 +183,8 @@ def indicoPolitics(tweet):
 
 def indicoPoliticsNumber(tweet):
     tag_dict = indicoio.political(tweet)
-    top = sorted(tag_dict.keys(), key=lambda x: tag_dict[x], reverse=True)[:2]
-    print(type(top))
-    print(top)
-    return top.key()
+    top = sorted(tag_dict.keys(), key=lambda x: tag_dict[x], reverse=True)[:1]
+    return tag_dict[top[0]]
 
 def indicoPositivity(tweet):
     return indicoio.sentiment(tweet)
