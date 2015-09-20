@@ -7,8 +7,8 @@ import indicoio
 import time
 import threading
 from googleapiclient.discovery import build
-from views import *
 from MyState import *
+import urllib2
 
 # Tokens and keys
 consumer_key = "nEcXxJ8rQ7UyDrPYzzDTFScLl"
@@ -75,10 +75,10 @@ def TwitterUpdateThread():
     def TwitterObserverModule():
         finalKeywords=list()
         for keyword in KeywordsToFilter:
-            print(type(keyword))
+            # print(type(keyword))
             decoded_str = keyword.decode("windows-1252")
             encoded_str = decoded_str.encode("utf8")
-            print(keyword + " " + decoded_str + " " + encoded_str)
+            # print(keyword + " " + decoded_str + " " + encoded_str)
             if(encoded_str is None):
                 print(keyword + " was passed as NoneType")
                 continue
@@ -96,7 +96,7 @@ def TwitterUpdateThread():
         auth.secure = True
         auth.set_access_token(access_token, access_token_secret)
         myApi = tweepy.API(auth)
-        TwitterStream = Stream(auth, tweepy.StreamListener())
+        TwitterStream = Stream(auth, MyStreamListener())
 
         print("Authentication of Twitter Streamsuccessfull!")
 
@@ -123,19 +123,17 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_data(self, raw_data):
         global PointsCaptured
-        myStates = getMyStates()
-
-        self.counter += 1
-        if self.counter == 2:
-            self.on_disconnect('2 messages received')
         data = json.loads(raw_data)
         message = data['text']
+        print(message)
         # Someday we'll get to this... Not today though.
         # if isNotEnglish(message):
         #     message = translateFromUnknownLanguageToEnglish(message)
         politicalTag = indicoPolitics(message)
+        print(politicalTag)
         if data['user']['geo_enabled'] == True:
             mostAccurateLocation = data['coordinates']['coordinates']
+            coordinates = mostAccurateLocation
         else:
             location = data['user']['location']
             if location is not None:
@@ -145,17 +143,19 @@ class MyStreamListener(tweepy.StreamListener):
                     print(location + " was passed as NoneType")
                 if ',' in encoded_str:
                     mostAccurateLocation = encoded_str
-                    # service = build('geocode', 'v1', developerKey=googleAPIKey)
-                    # coordinates = service.geocoder().getLatLng().list
-                    # TODO: Grab the coordinates from Google Maps API
-                    coordinates = None
+                    try:
+                        url = "https://maps.googleapis.com/maps/api/geocode/json?address="+mostAccurateLocation+"&key="+googleAPIKey
+                        print(url)
+                        result = urllib2.urlopen(url)
+                    except Exception, e:
+                        print(e)
+                    coordinates = result
                 else:
                     mostAccurateLocation = None
                     coordinates = None
 
-        PointsCaptured.append([politicalTag, mostAccurateLocation])
-
-        if(len(PointsCaptured)==MAX_CACHE_NUMBER):
+        PointsCaptured.append([politicalTag, indicoPoliticsNumber(message), indicoPositivity(message), mostAccurateLocation])
+        if len(PointsCaptured) is MAX_CACHE_NUMBER:
             PointsCaptured.remove(0)  # Remove the first element!
 
         print(PointsCaptured)
@@ -170,6 +170,7 @@ class MyStreamListener(tweepy.StreamListener):
             myStateOfPoint.newPoint.long = coordinates[1]
 
         print(myStateOfPoint)
+        P
 
 # end Class MyStreamListener
 
@@ -180,7 +181,10 @@ def indicoPolitics(tweet):
 
 def indicoPoliticsNumber(tweet):
     tag_dict = indicoio.political(tweet)
-    return sorted(tag_dict.keys(), key=lambda x: tag_dict.keys()[x], reverse=True)[:1]
+    top = sorted(tag_dict.keys(), key=lambda x: tag_dict[x], reverse=True)[:2]
+    print(type(top))
+    print(top)
+    return top.key()
 
 def indicoPositivity(tweet):
     return indicoio.sentiment(tweet)
