@@ -17,6 +17,23 @@
 </script>
 
 <script>
+    // "Constants"
+    var MAX_NODES_PER_HEAT_LAYER = 500;
+    var partyStrings = ["green","liberal","conservative","libertarian"];
+    var heatmapNodes = "new_points";
+    var currentDate = new Date();
+
+    //General variables
+    var syncTime = currentDate.getTime(); //Time since epoch, starting at the moment the page loads
+
+    // Heatmap variables
+    var greenHeat = [];
+    var liberalHeat =[];
+    var conservativeHeat = [];
+    var libertarianHeat =[];
+    var heatmapCentral = { "green": greenHeat, "liberal": liberalHeat, "conservative": conservativeHeat, "libertarian": libertarianHeat};
+
+    //Toggles the highlight on the buttons
     function highlight(element){
         if($(element).hasClass("active")){
             $(element).removeClass("active");
@@ -26,12 +43,90 @@
         }
     }
 
-    //Put the AJAX function in here!
-    //TODO: Need to update every single second
+    //Acts as a general AJAX function for receiving data on Party Status
+    function consultPartyInfo(partyString){
+        console.log("Beggining AJAX");
+        $.ajax({ //Ask if we can save this schedule
+            type: 'get',
+            url: "/get_status/"+partyString, //+Green,conservative,......
+            success: function (data) {
+                console.log(data.valueOf());
+                var processedData = jQuery.parseJSON(data.valueOf());
+
+                //Now pass it off to updateParty()
+                updateParty(processedData);
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                if (xhr.status == 404 || xhr.status == 400) {
+                    $("#save_progress").modal('hide');
+                    alert(thrownError);
+                    console.log("ERROR!");
+                }
+            }
+        });
+    }
+
+    //check on the heatmap nodes and update them accordingly
+    function checkMapNodes(){
+        console.log("Beggining AJAX");
+        $.ajax({ //Ask if we can save this schedule
+            type: 'get',
+            url: "/get_status/new_points/"
+            success: function (data) {
+                console.log(data.valueOf());
+                var processedData = jQuery.parseJSON(data.valueOf());
+                var updateTime = processedData.get("UpdateTime");
+
+                if(syncTime - updateTime < 0){ //In this case, client NEEDS to update
+                    updateHeatmaps(processedData.get('newPoints'));
+                    syncTime = updateTime;
+                }
+
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                if (xhr.status == 404 || xhr.status == 400) {
+                    $("#save_progress").modal('hide');
+                    alert(thrownError);
+                    console.log("ERROR!");
+                }
+            }
+        });
+    }
+
+
+    function periodicUpdate(){
+        //First, check map nodes
+        checkMapNodes();
+
+        //Then, update the corresponding party info
+        for(var i=0; i<partyStrings.length; i++){
+            consultPartyInfo(partyStrings[i]);
+        }
+
+        //and now, remind myself of calling this method again after 1 second.
+        setTimeout("periodicUpdate()",1000);
+    }
+
+    //updates the party specific data shown in the small blocks below.
+    function updateParty(data){
+        var selector = '#'+data.get("party")+'_list';
+        $(selector).find('#percent-total').html('<a>'+data.get("percentTotal")+'</a>');
+        $(selector).find('#certainty').html('<a>'+data.get("certainty")+'</a>');
+        $(selector).find('#positivity').html('<a>'+data.get("positivity")+'</a>');
+    }
+
+    //Add new heatmap nodes to their corresponding parts
+    function updateHeatmaps(nodeData){ //TODO: Double Check!
+        var partyVariable = "party";
+
+        for(var i =0; i<nodeData.length; i++){
+            var lat = nodeData.get("lat");
+            var long = nodeData.get("long");
+            heatmapCentral.get(nodeData.get(partyVariable)).append(new google.maps.LatLng(lat, long))
+        }
+    }
 
     function initialize() {
-
-        //TODO: Actually make this thing load data from our server!
         var heatmapData = [
           new google.maps.LatLng(37.782, -122.447),
           new google.maps.LatLng(37.782, -122.445),
@@ -88,6 +183,7 @@
     }
 
     //Initialize the map
+    //CALL ONLY on Document load anr/or ready!
     google.maps.event.addDomListener(window, 'load', initialize);
 
 
@@ -160,34 +256,34 @@
 
                 <li>
                     <p class="btn-small active ecogreen">Green Party</p>
-                    <ul class="text-center unstyled">
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
+                    <ul class="text-center unstyled" id="green_list">
+                        <li id="percent-total"><a>[NaN]</a></li>
+                        <li id="certainty"><a>[NaN]</a></li>
+                        <li id="positivity"><a>[NaN]</a></li>
                     </ul>
                 </li>
                 <li>
                     <p class="btn-small active liberal">Liberal Party</p>
-                    <ul class="text-center unstyled">
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
+                    <ul class="text-center unstyled" id="liberal_list">
+                        <li id="percent-total"><a>[NaN]</a></li>
+                        <li id="certainty"><a>[NaN]</a></li>
+                        <li id="positivity"><a>[NaN]</a></li>
                     </ul>
                 </li>
                 <li>
                     <p class="btn-small active conservador">Conservativism</p>
-                    <ul class="text-center unstyled">
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
+                    <ul class="text-center unstyled" id="conservative_list">
+                        <li id="percent-total"><a>[NaN]</a></li>
+                        <li id="certainty"><a>[NaN]</a></li>
+                        <li id="positivity"><a>[NaN]</a></li>
                     </ul>
                 </li>
                 <li>
                     <p class="btn-small derecha">Libertarianism</p>
-                    <ul class="text-center unstyled">
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
-                        <li><a>[NaN]</a></li>
+                    <ul class="text-center unstyled" id="libertarian_list">
+                        <li id="percent-total"><a>[NaN]</a></li>
+                        <li id="certainty"><a>[NaN]</a></li>
+                        <li id="positivity"><a>[NaN]</a></li>
                     </ul>
                 </li>
             </ul>
@@ -197,16 +293,6 @@
 
 
 </div>
-
-
-
-
-{##}
-{#<footer class="footer navbar-fixed-bottom">#}
-{#    <div class="col-md-3">A</div>#}
-{#    <div class="col-md-3">A</div>#}
-{##}
-{#</footer><!-- /.navbar -->#}
 
 </body>
 </html>
