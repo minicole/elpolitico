@@ -7,7 +7,7 @@ import indicoio
 import time
 import threading
 from googleapiclient.discovery import build
-from views import getMyStates
+from MyState import *
 
 # Tokens and keys
 consumer_key = "nEcXxJ8rQ7UyDrPYzzDTFScLl"
@@ -62,7 +62,7 @@ def KeywordUpdateThread():
             print("Asking for new political keywords")
             spawn_off = threading.Thread(target=KeywordUpdateModule)
             spawn_off.start()
-            time.sleep(600)
+            time.sleep(60)
 
     except Exception, e:
         print("An error occurred with the keyword observer stream thread. This wasn't supposed to happen!")
@@ -102,7 +102,7 @@ def TwitterUpdateThread():
         while True:
             if(len(KeywordsToFilter)>0):
                 TwitterObserverModule()
-            time.sleep(300)
+            time.sleep(30)
     except:
         print("An error occurred with the Twitter feed. This wasn't supposed to happen!")
 # end TwitterUpdateThread()
@@ -122,7 +122,7 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_data(self, raw_data):
         global PointsCaptured
-        myStates = getMyStates()
+        myStates = MyStates.getMyStates()
 
         self.counter += 1
         if self.counter == 2:

@@ -49,6 +49,7 @@
         $.ajax({ //Ask if we can save this schedule
             type: 'get',
             url: "/get_status/"+partyString, //+Green,conservative,......
+            data:{},
             success: function (data) {
                 console.log(data.valueOf());
                 var processedData = jQuery.parseJSON(data.valueOf());
@@ -71,7 +72,8 @@
         console.log("Beggining AJAX");
         $.ajax({ //Ask if we can save this schedule
             type: 'get',
-            url: "/get_status/new_points/"
+            url: "/get_status/new_points/",
+            data:{},
             success: function (data) {
                 console.log(data.valueOf());
                 var processedData = jQuery.parseJSON(data.valueOf());
