@@ -38,8 +38,8 @@ class MyStreamListener(tweepy.StreamListener):
             self.on_disconnect('2 messages received')
         data = json.loads(raw_data)
         message = data['text']
-        # if isNotEnglish(message):
-        #     message = translateFromUnknownLanguageToEnglish(message)
+        if isNotEnglish(message):
+            message = translateFromUnknownLanguageToEnglish(message)
         tags = indicoTags(message)
         if data['user']['geo_enabled'] == True:
             mostAccurateLocation = data['coordinates']['coordinates']
@@ -75,8 +75,15 @@ def translateFromUnknownLanguageToEnglish(tweetText):
 def isNotEnglish(text):
     language = indicoio.language(text)
     print(language)
-    return sorted(language.keys(), key=lambda x: language[x], reverse=True)[:1] < 0.5
+    testy=sorted(language.keys(), key=lambda x: language[x], reverse=True)[:1] < 0.5
+    print(testy)
+    print("!!")
+    return testy
 
+
+#############################################################################################
+
+# Start Script execution
 start = time.time()
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -93,21 +100,25 @@ for raw_data in timeline:
     message = raw_data.text
     kw = indicoKeywords(message)
     for keyword in kw:
-        keywords.append(keyword)
-
+        keywords.append(keyword.decode('utf8'))
 myKeywordStream.disconnect()
 
 print(keywords)
 
 myStream = Stream(auth, MyStreamListener())
+keywordsToFilter=list()
 for keyword in keywords:
+    print(type(keyword))
     decoded_str = keyword.decode("windows-1252")
     encoded_str = decoded_str.encode("utf8")
     print(keyword + " " + decoded_str + " " + encoded_str)
     if(encoded_str is None):
         print(keyword + " was passed as NoneType")
         continue
-    myStream.filter(track=["%s", encoded_str])
+    print(type(myStream))
+    keywordsToFilter.append(encoded_str)
+
+myStream.filter(track=keywordsToFilter)
 
 end = time.time()
 print(end - start)
