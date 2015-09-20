@@ -111,6 +111,8 @@ def TwitterUpdateThread():
 
 class MyStreamListener(tweepy.StreamListener):
     counter = 0
+    def __init__(self):
+        self.f = open("file.txt",'ab')
 
     def on_status(self, status):
         print(status.text)
@@ -122,56 +124,69 @@ class MyStreamListener(tweepy.StreamListener):
         print(status_code)
 
     def on_data(self, raw_data):
+
+        self.f.write(raw_data)
+        self.f.write('\n')
+        coordinates = None
+
         global PointsCaptured
         data = json.loads(raw_data)
-        message = data['text']
-        print(message)
-        # Someday we'll get to this... Not today though.
-        # if isNotEnglish(message):
-        #     message = translateFromUnknownLanguageToEnglish(message)
-        politicalTag = indicoPolitics(message)
-        # if data['user']['geo_enabled'] == True:
-        #     mostAccurateLocation = data['coordinates']['coordinates']
-        #     coordinates = mostAccurateLocation
-        # else:
-        #     location = data['user']['location']
-        #     if location is not None:
-        #         decoded_str = location.decode("windows-1252")
-        #         encoded_str = decoded_str.encode("utf8")
-        #         if encoded_str is None:
-        #             print(location + " was passed as NoneType")
-        #         if ',' in encoded_str:
-        #             mostAccurateLocation = encoded_str
-        #             try:
-        #                 url = "https://maps.googleapis.com/maps/api/geocode/json?address="+mostAccurateLocation+"&key="+googleAPIKey
-        #                 print(url)
-        #                 result = urllib2.urlopen(url)
-        #             except Exception, e:
-        #                 print(e)
-        #             coordinates = result
-        #         else:
-        #             mostAccurateLocation = None
-        #             coordinates = None
-        # coordinates=None
-        # poliNumber = indicoPoliticsNumber(message)
-        # print(poliNumber + "!!!")
-        # positivity = indicoPositivity(message)
-        # print(positivity + "!!!")
-        #
-        # myStateOfPoint = StateOfPoint()
-        # myStateOfPoint.newPoint.party = politicalTag
-        # myStateOfPoint.newPoint.tendency = poliNumber
-        # myStateOfPoint.positivity = positivity
-        # if coordinates is not None:
-        #     print(coordinates)
-        #     coordinates = mostAccurateLocation.split(', ')
-        #     myStateOfPoint.newPoint.lat = coordinates[0]
-        #     myStateOfPoint.newPoint.long = coordinates[1]
-        #
-        # PointsCaptured.append(myStateOfPoint)
-        # if len(PointsCaptured) is MAX_CACHE_NUMBER:
-        #     PointsCaptured.remove(0)  # Remove the first element!
-        # print(myStateOfPoint)
+        if 'text' in data:
+            message = data['text']
+            print(message)
+            # Someday we'll get to this... Not today though.
+            # if isNotEnglish(message):
+            #     message = translateFromUnknownLanguageToEnglish(message)
+            politicalTag = indicoPolitics(message)
+            print("Doing GEog")
+            if 'user' in data:
+                if 'coordinates' in data['user']:
+                    if 'coordinates' in data['user']['coordinates']:
+                        mostAccurateLocation = data['coordinates']['coordinates']
+                    else:
+                        mostAccurateLocation = data['coordinates']
+                        coordinates = mostAccurateLocation
+                    # elif 'location' in data['user']:
+                    #     location = data['user']['location']
+                    #     if location is not None:
+                    #         decoded_str = location.decode("windows-1252")
+                    #         encoded_str = decoded_str.encode("utf8")
+                    #         if encoded_str is None:
+                    #             print(location + " was passed as NoneType")
+                    #         if ',' in encoded_str:
+                    #             mostAccurateLocation = encoded_str
+                    #             try:
+                    #                 url = "https://maps.googleapis.com/maps/api/geocode/json?address="+mostAccurateLocation.encode('utf-8')+"&key="+googleAPIKey
+                    #                 print(url)
+                    #                 result = urllib2.urlopen(url)
+                    #             except Exception, e:
+                    #                 print(e)
+                    #             coordinates = result
+                    #         else:
+                    #             mostAccurateLocation = None
+                    #             coordinates = None
+            # coordinates=None
+            # poliNumber = indicoPoliticsNumber(message)
+            # print(poliNumber + "!!!")
+            # positivity = indicoPositivity(message)
+            # print(positivity + "!!!")
+            #
+            print("Finished geog, doing states")
+            myStateOfPoint = StateOfPoint()
+            myStateOfPoint.newPoint.party = politicalTag
+            # myStateOfPoint.newPoint.tendency = poliNumber
+            # myStateOfPoint.positivity = positivity
+            print("doing coordinates")
+            if coordinates is not None:
+                print(coordinates)
+                coordinates = mostAccurateLocation.split(', ')
+                myStateOfPoint.newPoint.lat = coordinates[0]
+                myStateOfPoint.newPoint.long = coordinates[1]
+            #
+            # PointsCaptured.append(myStateOfPoint)
+            # if len(PointsCaptured) is MAX_CACHE_NUMBER:
+            #     PointsCaptured.remove(0)  # Remove the first element!
+            # print(myStateOfPoint)
 
 
 # end Class MyStreamListener
@@ -183,7 +198,9 @@ def indicoPolitics(tweet):
 
 def indicoPoliticsNumber(tweet):
     tag_dict = indicoio.political(tweet)
+    print(tag_dict)
     top = sorted(tag_dict.keys(), key=lambda x: tag_dict[x], reverse=True)[:1]
+    print(tag_dict[top[0]])
     return tag_dict[top[0]]
 
 def indicoPositivity(tweet):
