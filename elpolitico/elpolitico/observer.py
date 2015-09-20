@@ -7,6 +7,7 @@ import indicoio
 import time
 import threading
 from googleapiclient.discovery import build
+from views import getMyStates
 
 # Tokens and keys
 consumer_key = "nEcXxJ8rQ7UyDrPYzzDTFScLl"
@@ -121,6 +122,7 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_data(self, raw_data):
         global PointsCaptured
+        myStates = getMyStates()
 
         self.counter += 1
         if self.counter == 2:
@@ -130,7 +132,7 @@ class MyStreamListener(tweepy.StreamListener):
         # Someday we'll get to this... Not today though.
         # if isNotEnglish(message):
         #     message = translateFromUnknownLanguageToEnglish(message)
-        tags = indicoTags(message)
+        politicalTags = indicoPolitics(message)
         if data['user']['geo_enabled'] == True:
             mostAccurateLocation = data['coordinates']['coordinates']
         else:
@@ -145,17 +147,19 @@ class MyStreamListener(tweepy.StreamListener):
                 else:
                     mostAccurateLocation = None
 
-        PointsCaptured.append([tags, mostAccurateLocation])
+        PointsCaptured.append([politicalTags, mostAccurateLocation])
 
         if(len(PointsCaptured)==MAX_CACHE_NUMBER):
             PointsCaptured.remove(0)  # Remove the first element!
 
         print(PointsCaptured)
+
+        # myStates.
 # end Class MyStreamListener
 
 
-def indicoTags(tweet):
-    tag_dict = indicoio.text_tags(tweet)
+def indicoPolitics(tweet):
+    tag_dict = indicoio.political(tweet)
     return sorted(tag_dict.keys(), key=lambda x: tag_dict[x], reverse=True)[:3]
 
 def indicoKeywords(tweet):
