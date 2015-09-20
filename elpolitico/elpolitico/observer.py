@@ -7,7 +7,8 @@ import indicoio
 import time
 import threading
 from googleapiclient.discovery import build
-from views import getMyStates
+from views import *
+from MyState import *
 
 # Tokens and keys
 consumer_key = "nEcXxJ8rQ7UyDrPYzzDTFScLl"
@@ -132,7 +133,7 @@ class MyStreamListener(tweepy.StreamListener):
         # Someday we'll get to this... Not today though.
         # if isNotEnglish(message):
         #     message = translateFromUnknownLanguageToEnglish(message)
-        politicalTags = indicoPolitics(message)
+        politicalTag = indicoPolitics(message)
         if data['user']['geo_enabled'] == True:
             mostAccurateLocation = data['coordinates']['coordinates']
         else:
@@ -144,23 +145,45 @@ class MyStreamListener(tweepy.StreamListener):
                     print(location + " was passed as NoneType")
                 if ',' in encoded_str:
                     mostAccurateLocation = encoded_str
+                    # service = build('geocode', 'v1', developerKey=googleAPIKey)
+                    # coordinates = service.geocoder().getLatLng().list
+                    # TODO: Grab the coordinates from Google Maps API
+                    coordinates = None
                 else:
                     mostAccurateLocation = None
+                    coordinates = None
 
-        PointsCaptured.append([politicalTags, mostAccurateLocation])
+        PointsCaptured.append([politicalTag, mostAccurateLocation])
 
         if(len(PointsCaptured)==MAX_CACHE_NUMBER):
             PointsCaptured.remove(0)  # Remove the first element!
 
         print(PointsCaptured)
 
-        # myStates.
+        myStateOfPoint = StateOfPoint()
+        myStateOfPoint.newPoint.party = politicalTag
+        myStateOfPoint.newPoint.tendency = indicoPoliticsNumber(message)
+        myStateOfPoint.positivity = indicoPositivity(message)
+        if coordinates is not None:
+            coordinates = mostAccurateLocation.split(', ')
+            myStateOfPoint.newPoint.lat = coordinates[0]
+            myStateOfPoint.newPoint.long = coordinates[1]
+
+        print(myStateOfPoint)
+
 # end Class MyStreamListener
 
 
 def indicoPolitics(tweet):
     tag_dict = indicoio.political(tweet)
-    return sorted(tag_dict.keys(), key=lambda x: tag_dict[x], reverse=True)[:3]
+    return sorted(tag_dict.keys(), key=lambda x: tag_dict[x], reverse=True)[:1]
+
+def indicoPoliticsNumber(tweet):
+    tag_dict = indicoio.political(tweet)
+    return sorted(tag_dict.keys(), key=lambda x: tag_dict.keys()[x], reverse=True)[:1]
+
+def indicoPositivity(tweet):
+    return indicoio.sentiment(tweet)
 
 def indicoKeywords(tweet):
     tag_dict = indicoio.keywords(tweet)
