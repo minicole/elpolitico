@@ -42,7 +42,7 @@ def init_workers():
 def home(request):
 
     spawn_off = threading.Thread(target=init_workers)
-    spawn_off.start()
+    # spawn_off.start()
 
     print(STATICFILES_DIRS)
 
@@ -58,7 +58,7 @@ def party_check(request, party=None):
         myStates = MyStates()
     for mystate in myStates.currentStates:
         if mystate.party == party:
-            data = mystate.exportToFrontEnd()
+            data = mystate.exportRandomness()
             data = json.dumps(data)
             return HttpResponse(data)
     return HttpResponseRedirect('/')

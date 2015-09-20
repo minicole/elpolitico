@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>El Politico - Test</title>
+    <title>El Politico - See the World and all of its colors!</title>
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'content/css/bootstrap.min.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'content/css/estilopolitico.css' %}">
@@ -22,6 +22,38 @@
     var partyStrings = ["green","liberal","conservative","libertarian"];
     var heatmapNodes = "new_points";
     var currentDate = new Date();
+
+    var libertarianGradient = ['rgba(174,131,25,0)',
+                                'rgba(174,131,25,0.6)',
+                                'rgba(196,148,29,0.7)',
+                                'rgba(218,165,32,0.7)',
+                                'rgba(225,175,51,0.8)',
+                                'rgba(228,184,73,0.9)',
+                                'rgba(232,193,95,1)'];
+
+    var conservativeGradient = ['rgba(0,0,179,0)',
+                                'rgba(0,0,204,0.6)',
+                                'rgba(0,0,230,0.7)',
+                                'rgba(0,0,255,0.7)',
+                                'rgba(26,26,255,0.8)',
+                                'rgba(51,51,255,0.9)',
+                                'rgba(77,77,255,1)'];
+
+    var liberalGradient = ['rgba(255,2,2,0)',
+                            'rgba(255,21,21,0.6)',
+                            'rgba(255,41,41,0.7)',
+                            'rgba(255,61,61,0.7)',
+                            'rgba(255,80,80,0.8)',
+                            'rgba(255,100,100,0.9)',
+                            'rgba(255,119,119,1)'];
+
+    var greenGradient = ['rgba(0,52,0,0)',
+                            'rgba(0,77,0,0.6)',
+                            'rgba(0,103,0,0.7)',
+                            'rgba(0,128,0,0.7)',
+                            'rgba(0,154,0,0.8)',
+                            'rgba(0,179,0,0.9)',
+                            'rgba(0,205,0,1)'];
 
     //General variables
     var syncTime = currentDate.getTime(); //Time since epoch, starting at the moment the page loads
@@ -97,8 +129,9 @@
 
 
     function periodicUpdate(){
+        console.log("Upating everything again");
         //First, check map nodes
-        checkMapNodes();
+{#        checkMapNodes();#}
 
         //Then, update the corresponding party info
         for(var i=0; i<partyStrings.length; i++){
@@ -106,15 +139,16 @@
         }
 
         //and now, remind myself of calling this method again after 1 second.
-        setTimeout("periodicUpdate()",1000);
+{#        setTimeout("periodicUpdate()",1000);#}
     }
 
     //updates the party specific data shown in the small blocks below.
     function updateParty(data){
-        var selector = '#'+data.get("party")+'_list';
-        $(selector).find('#percent-total').html('<a>'+data.get("percentTotal")+'</a>');
-        $(selector).find('#certainty').html('<a>'+data.get("certainty")+'</a>');
-        $(selector).find('#positivity').html('<a>'+data.get("positivity")+'</a>');
+        console.log(data.party+" "+data.percentTotal+" "+data.certainty+" "+data.positivity);
+        var selector = '#'+data.party+'_list';
+        $(selector).children('#percent-total').html('<a>'+data.percentTotal+'</a>');
+        $(selector).children('#certainty').html('<a>'+data.certainty+'</a>');
+        $(selector).children('#positivity').html('<a>'+data.positivity+'</a>');
     }
 
     //Add new heatmap nodes to their corresponding parts
@@ -158,7 +192,7 @@
 
         //Make a new Heatmap Layer
         var heatmap = new google.maps.visualization.HeatmapLayer({
-            data: heatmapData
+            data: heatmapData, gradient: conservativeGradient
         });
 
         var waterlooHeat = [
@@ -181,6 +215,8 @@
         });
 
         heatmapCan.setMap(map);
+        heatmapCan.set('gradient',liberalGradient);
+        heatmapCan.set('radius',10);
         heatmap.setMap(map);
     }
 
@@ -188,6 +224,11 @@
     //CALL ONLY on Document load anr/or ready!
     google.maps.event.addDomListener(window, 'load', initialize);
 
+    $( document ).ready(function() {
+        console.log( "ready!" );
+        periodicUpdate();
+
+    });
 
 </script>
 

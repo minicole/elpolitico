@@ -1,6 +1,7 @@
 __author__ = 'Nicole'
 
 import json
+import random
 
 GREEN = 'green'
 CONSERVATIVE = 'conservative'
@@ -54,6 +55,9 @@ class CurrentStateOfParty:
     def exportToFrontEnd(self):
         return {'party': self.party, 'percentTotal': self.percentTotal, 'certainty': self.certainty, 'positivity': self.positivity}
 
+    def exportRandomness(self):
+        return {'party': "conservative", 'percentTotal': random.randint(-60,60), 'certainty': random.randint(-60,60), 'positivity': random.randint(-60,60)}
+
 
 class StateOfPoint:
     def __init__(self):
@@ -70,3 +74,6 @@ class NewPoint:
 
     def exportToFrontEnd(self):
         return {"lat": self.lat, "long": self.long, "tendency": self.tendency, "party": self.party}
+
+    def exportRandomness(self):
+        return {"lat": random.randint(-60,60), "long": random.randint(-60,60), "tendency": random.randint(-60,60), "party": random.randint(-60,60)}
