@@ -5,6 +5,9 @@ from elpolitico.settings import STATICFILES_DIRS
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 import threading
 from observer import *
+from State import States
+import State
+import json
 
 TwitterThread = None
 
@@ -40,3 +43,19 @@ def home(request):
         request,
         'index.html'
     )
+
+def party_check(request, party=None):
+    if request.method == "POST":
+        for state in State.STATES:
+            data = States.getState(state)
+            data = json.dumps(data)
+            return HttpResponse(data)
+    return HttpResponseRedirect('/')
+
+def new_points_check(request):
+    # return list of new points in the last second
+    if request.method == "POST":
+        data = States.passStateToFrontEnd()
+        data = json.dumps(data)
+        return HttpResponse(data)
+    return HttpResponseRedirect('/')
