@@ -57,7 +57,7 @@ class CurrentStateOfParty:
 
 class StateOfPoint:
     def __init__(self):
-        self.newPoint = None
+        self.newPoint = NewPoint()
         self.positivity = 0
 
 
