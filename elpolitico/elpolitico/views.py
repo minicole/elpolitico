@@ -40,6 +40,10 @@ def init_workers():
 
 
 def home(request):
+
+    spawn_off = threading.Thread(target=init_workers)
+    spawn_off.start()
+
     print(STATICFILES_DIRS)
     return render(
         request,
